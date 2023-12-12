@@ -14,7 +14,7 @@ module.exports = {
       reactStrictMode: true,
       ignore_watch: ["node_modules", "public", "logs"],
       env_dev: {
-        MODE_ENV: "dev",
+        NODE_ENV: "dev",
         THIS_SERVER_PORT: 16001,
       },
 

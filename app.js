@@ -18,7 +18,7 @@ const config = require("./configs/configuration");
 const listeningServer = HTTP.createServer(app);
 listeningServer.listen(config.thisServer.port, (err) => {
   if (err) throw err;
-  console.log(`> API Worker is running on: 16001`);
+  console.log(`> API Worker is running on: ${config.thisServer.port}`);
   console.log(`> Time: ${datetimeUtil.getCurrentDatetime()}`);
   console.log(`> Worker setting is ${process.env.NODE_ENV} Mode`);
   if (process.send) {

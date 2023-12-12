@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "local": "set NODE_ENV=local&&nodemon ./app.js"
+    "local": "set NODE_ENV=local&&nodemon ./app.js",
+    "dev": "pm2 reload ecosystem.config.js --env dev",
+    "live": "pm2 reload ecosystem.config.js --env live"
   },
   "author": "",
   "license": "UNLICENSED",
