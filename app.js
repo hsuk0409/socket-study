@@ -47,6 +47,7 @@ io.use((socket, next) => {
 
 const socketBaseHandler = require("./sockets/base.handler");
 io.on("connect", async (socket) => {
+  console.log(`>>>> Connected Socket Server <<<<`);
   socketBaseHandler(io, socket);
 });
 
