@@ -1,13 +1,11 @@
 module.exports = function (io, socket) {
-  socket.on("socket:init", function (data, callBack) {
+  socket.on("socket:init", async function (data, callBack) {
     console.log(`>>>> [socket:init] data: ${JSON.stringify(data)} <<<<`);
 
-    return callBack({ code: "SUCCESS", data: 1 });
+    return await callBack({ code: "SUCCESS", data: 1 });
   });
 
-  socket.on("disconnect", function (data, callBack) {
+  socket.on("disconnect", async function (data, callBack) {
     console.log(`>>>> [disconnect] data: ${JSON.stringify(data)} <<<<`);
-
-    return callBack({ code: "SUCCESS", data: 1 });
   });
 };

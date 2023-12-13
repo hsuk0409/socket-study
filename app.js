@@ -37,18 +37,24 @@ io.use((socket, next) => {
       socket.conn.remoteAddress.split(":")[3].split(",")[0] ||
       "0.0.0.0";
   } catch (err) {
-    console.log(`ipv4 err: ${JSON.stringify(err)}`);
+    console.log(`ipv4 err: ${err}`);
   } finally {
     socket.ipv4 = ipv4;
   }
 
   console.log(`>>>>> Socket ipv4: ${ipv4} <<<<<`);
+
+  next();
 });
 
 const socketBaseHandler = require("./sockets/base.handler");
 io.on("connect", async (socket) => {
   console.log(`>>>> Connected Socket Server <<<<`);
   socketBaseHandler(io, socket);
+});
+
+app.use("/", (req, res) => {
+  res.sendFile(__dirname + "/index.html");
 });
 
 app.on("ready", () => {
