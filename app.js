@@ -53,10 +53,6 @@ io.on("connect", async (socket) => {
   socketBaseHandler(io, socket);
 });
 
-app.use("/", (req, res) => {
-  res.sendFile(__dirname + "/index.html");
-});
-
 app.on("ready", () => {
   console.log(`Server running on port: ${config.thisServer.port}`);
 });
