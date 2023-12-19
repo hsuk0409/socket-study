@@ -47,10 +47,14 @@ io.use((socket, next) => {
   next();
 });
 
+//TODO socket.io redisAdapter, 왜 필요한가?
+
 const socketBaseHandler = require("./sockets/base.handler");
+const socketGameHandler = require("./sockets/game.handler");
 io.on("connect", async (socket) => {
   console.log(`>>>> Connected Socket Server <<<<`);
   socketBaseHandler(io, socket);
+  socketGameHandler(io, socket);
 });
 
 app.on("ready", () => {
