@@ -27,8 +27,12 @@ listeningServer.listen(config.thisServer.port, (err) => {
   }
 });
 
+const { generateUUID } = require("./utils/uuid.util");
+
 const io = socketIO.listen(listeningServer);
 io.use((socket, next) => {
+  socket.uid = generateUUID();
+
   let ipv4 = "0.0.0.0";
   try {
     ipv4 =

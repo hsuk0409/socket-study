@@ -1,3 +1,6 @@
+const { generateUUID } = require("../utils/uuid.util");
+const { RoomClosure } = require("../closures/room.closure");
+
 module.exports = function (io, socket) {
   /**
    * * 게임 기능
@@ -12,4 +15,34 @@ module.exports = function (io, socket) {
    * * 체크 사항
    * * - 서버 사양에 따른 게임/방 제한
    */
+
+  /**
+   * * 방 생성
+   */
+  socket.on("room:create", async function (data, callBack) {
+    const roomFunc = new RoomClosure();
+    let roomData = roomFunc.getRoomData();
+    let roomId;
+    try {
+      roomId = generateUUID();
+      while (roomId in roomData === true) {
+        roomId = generateUUID();
+      }
+    } catch (err) {
+      const errorMsg = `Create room error! ${JSON.stringify(err)}`;
+      console.error(errorMsg);
+      return await callBack({ code: "FAIL", message: errorMsg });
+    }
+
+    const roomLimit = 5;
+    if (roomData.length > roomLimit) {
+      const errorMsg = `Room is full.`;
+      console.error(errorMsg);
+      return await callBack({ code: "FAIL", message: errorMsg });
+    }
+
+    roomData = roomFunc.createRoom(roomId);
+
+    return await callBack({ code: "SUCCESS", data: roomData[roomId] });
+  });
 };

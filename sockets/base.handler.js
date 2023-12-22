@@ -1,11 +1,8 @@
+const { RoomClosure } = require("../closures/room.closure");
+
 module.exports = function (io, socket) {
-  socket.on("socket:init", async function (data) {
-    console.log(`>>>> [socket:init] data: ${JSON.stringify(data)} <<<<`);
-
-    await io.emit("socket:test", { code: "SUCCESS", data: 1 });
-  });
-
   socket.on("disconnect", async function (data) {
     console.log(`>>>> [disconnect] data: ${JSON.stringify(data) || ""} <<<<`);
+    //TODO 클로저 상태 정리
   });
 };
