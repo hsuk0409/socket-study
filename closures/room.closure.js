@@ -29,11 +29,11 @@ function RoomClosure() {
 
   this.joinRoom = function (roomId, uid) {
     if (roomId in roomData === false) {
-      console.error(`Not exists room id`);
+      console.log(`Not exists room id`);
       return null;
     }
     const room = roomData[roomId];
-    if (uid in room) {
+    if (uid in room.roomUsers) {
       return room;
     }
     if (this.canEnterRoom(roomId) === false) {
@@ -44,16 +44,25 @@ function RoomClosure() {
     return room;
   };
 
-  this.reaveRoom = function (roomId, uid) {
-    if (uid in roomData[roomId]) {
-      delete roomData[roomId][uid];
+  this.leaveRoom = function (roomId, uid) {
+    const room = roomData[roomId];
+    if (uid in room) {
+      delete room[uid];
     }
+
+    return room;
   };
 
   this.removeRoom = function (roomId) {
     if (roomId in roomData) {
       delete roomData[roomId];
     }
+
+    return roomData[roomId];
+  };
+
+  this.clearClosure = function () {
+    roomData = {};
   };
 }
 

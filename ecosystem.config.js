@@ -3,7 +3,7 @@ module.exports = {
     {
       name: "socket.server",
       script: "./app.js",
-      instances: 0,
+      instances: 1,
       exec_mode: "cluster",
       max_memory_restart: "500M",
       wait_ready: true,
