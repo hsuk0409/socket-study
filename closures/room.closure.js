@@ -1,17 +1,30 @@
 function RoomClosure() {
   var roomData = {};
 
-  this.getRoomData = function () {
-    return roomData;
+  this.getRoom = function (roomId) {
+    return roomData[roomId];
   };
 
   this.getRoomLength = function () {
     return Object.keys(roomData).length;
   };
 
-  this.createRoom = function (roomId) {
-    roomData[roomId] = {};
-    return roomData;
+  this.duplicateRoomId = function (roomId) {
+    return roomId in roomData;
+  };
+
+  this.createRoom = function (roomId, roomUserLimit, gameType) {
+    roomData[roomId] = {
+      roomUserLimit: roomUserLimit,
+      gameType: gameType,
+      roomUsers: [],
+    };
+    return roomData[roomId];
+  };
+
+  this.canEnterRoom = function (roomId) {
+    const room = roomData[roomId];
+    return room.roomUserLimit > room.roomUsers.length;
   };
 
   this.joinRoom = function (roomId, uid) {
@@ -19,16 +32,16 @@ function RoomClosure() {
       console.error(`Not exists room id`);
       return null;
     }
-    if (uid in roomData[roomId]) {
-      return roomData[roomId];
+    const room = roomData[roomId];
+    if (uid in room) {
+      return room;
     }
-    const roomUserLimit = 5;
-    if (roomData[roomId].length > roomUserLimit) {
+    if (this.canEnterRoom(roomId) === false) {
       console.log(`Room user is full.`);
       return null;
     }
-    roomData[roomId].push(uid);
-    return roomData[roomId];
+    room.roomUsers.push(uid);
+    return room;
   };
 
   this.reaveRoom = function (roomId, uid) {

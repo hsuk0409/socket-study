@@ -18,14 +18,23 @@ module.exports = function (io, socket) {
 
   /**
    * * 방 생성
+   * * req
+   * *  roomUserLimit: int
+   * *  gameType: string
+   * * res
+   * *  실패 시
+   * *    {code: "FAIL", message: ""}
+   * *  성공 시
+   * *    {code: "SUCCESS", data: {}}
+   * * 생성 후 필요한 행동
+   * * ...
    */
   socket.on("room:create", async function (data, callBack) {
     const roomFunc = new RoomClosure();
-    let roomData = roomFunc.getRoomData();
     let roomId;
     try {
       roomId = generateUUID();
-      while (roomId in roomData === true) {
+      while (roomFunc.duplicateRoomId(roomId)) {
         roomId = generateUUID();
       }
     } catch (err) {
@@ -35,14 +44,19 @@ module.exports = function (io, socket) {
     }
 
     const roomLimit = 5;
-    if (roomData.length > roomLimit) {
+    if (roomFunc.getRoomLength() > roomLimit) {
       const errorMsg = `Room is full.`;
       console.error(errorMsg);
       return await callBack({ code: "FAIL", message: errorMsg });
     }
 
-    roomData = roomFunc.createRoom(roomId);
+    const roomUserLimit = data.roomUserLimit || 5;
+    const gameType = data.gameType || "CATCH_TAIL";
+    const room = roomFunc.createRoom(roomId, roomUserLimit, gameType);
 
-    return await callBack({ code: "SUCCESS", data: roomData[roomId] });
+    return await callBack({
+      code: "SUCCESS",
+      data: { roomId: roomId, roomInfo: room },
+    });
   });
 };
