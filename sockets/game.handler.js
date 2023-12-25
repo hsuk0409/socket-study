@@ -91,7 +91,12 @@ module.exports = function (io, socket) {
     }
 
     const roomFunc = new RoomClosure();
-    //? 기존에 입장된 방이 있는지 체크 필요할까?
+    if (validation.isEmpty(socket.roomId) === false) {
+      roomFunc.leaveRoom(roomId, uid);
+      await socket.leave(roomId);
+    }
+    socket.roomId = roomId;
+
     const room = roomFunc.joinRoom(roomId, uid);
     if (validation.isEmpty(room)) {
       const errorMsg = `Fail join room...`;
