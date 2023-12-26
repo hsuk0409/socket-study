@@ -5,18 +5,31 @@ const validation = require("../utils/validation.util");
 module.exports = function (io, socket) {
   /**
    * * 게임 기능
+   * * 0. 소켓 초기화
    * * 1. 방 생성
    * *    - 최대 인원수 제한
    * *    - room_uid 생성
    * *    - game_type 파라미터
    * * 2. 방 입장
    * * 3. 게임 시작
-   * * 4. 게임에 대한 플레이 데이터 공유
+   * * 4. 인게임 데이터 공유
    * * 5. 방 떠나기
    *
    * * 체크 사항
    * * - 서버 사양에 따른 게임/방 제한
    */
+
+  /**
+   * * 소켓 초기화
+   * * 클라로 유저 데이터 전송
+   * * req
+   * * res
+   * * 소켓 처리
+   */
+  socket.on("init", async function (data, callBack) {
+    const uid = socket.uid;
+    return await callBack({ code: "SUCCESS", data: { uid } });
+  });
 
   /**
    * * 방 생성
@@ -28,7 +41,7 @@ module.exports = function (io, socket) {
    * *  실패 시
    * *    {code: "FAIL", message: ""}
    * *  성공 시
-   * *    {code: "SUCCESS", data: {}}
+   * *    {code: "SUCCESS", data: { roomId, room }}
    * * 소켓 처리
    */
   socket.on("room:create", async function (data, callBack) {
@@ -58,7 +71,7 @@ module.exports = function (io, socket) {
 
     return await callBack({
       code: "SUCCESS",
-      data: { roomId: roomId, roomInfo: room },
+      data: { roomId, room },
     });
   });
 
@@ -70,7 +83,7 @@ module.exports = function (io, socket) {
    * *  실패 시
    * *    {code: "FAIL", message: ""}
    * *  성공 시
-   * *    {code: "SUCCESS", data: {}}
+   * *    {code: "SUCCESS", data: { roomId, room }}
    * * 소켓 처리
    * *  socket.join(roomId)
    * *  io.sockets.in(roomId).emit("userList", {uid, room})
@@ -105,9 +118,36 @@ module.exports = function (io, socket) {
     }
 
     await socket.join(roomId);
-    await io.sockets.in(roomId).emit("userList", { uid: uid, room: room });
+    await io.sockets.in(roomId).emit("userList", { uid, room });
 
-    return await callBack({ code: "SUCESS", data: room });
+    return await callBack({ code: "SUCESS", data: { roomId, room } });
+  });
+
+  /**
+   * ? 게임 시작 이벤트에 대한 소켓 작업이 필요한게 있을까?
+   */
+
+  /**
+   * * 인게임 데이터 공유
+   * * req
+   * *  roomId: string
+   * *  uid: string
+   * *  gameType: string
+   * *  gameData: object
+   * * res callBack
+   * * 소켓 처리
+   * *  io.sockets.in(roomId).emit("gameData", {data: gameData})
+   */
+  socket.on("game:progress", async function (data, callBack) {
+    const roomId = data.roomId || socket.roomId;
+    const uid = socket.uid;
+    if (!validation.isEmpty(roomId) && !validation.isEmpty(uid)) {
+      const gameData = data.gameData;
+      await io.sockets.in(roomId).emit("gameData", { data: gameData });
+    } else {
+      const errorMsg = `roomId or uid is required.`;
+      console.error(errorMsg);
+    }
   });
 
   /**
@@ -119,13 +159,13 @@ module.exports = function (io, socket) {
    * *  실패 시
    * *    {code: "FAIL", message: ""}
    * *  성공 시
-   * *    {code: "SUCCESS", data: {}}
+   * *    {code: "SUCCESS", data: { roomId, room }}
    * * 소켓 처리
    * *  socket.leave(roomId)
    * *  io.sockets.in(roomId).emit("userList", {uid, room})
    */
   socket.on("room:leave", async function (data, callBack) {
-    const roomId = data.roomId;
+    const roomId = data.roomId || socket.roomId;
     if (validation.isEmpty(roomId)) {
       const errorMsg = `roomId is required.`;
       console.error(errorMsg);
@@ -140,12 +180,10 @@ module.exports = function (io, socket) {
     }
 
     const roomFunc = new RoomClosure();
-    //? 모든 방에서 떠나게 하는 기능이 필요할까?
     const room = roomFunc.leaveRoom(roomId, uid);
-
     await socket.leave(roomId);
-    await io.sockets.in(roomId).emit("userList", { uid: uid, room: room });
+    await io.sockets.in(roomId).emit("userList", { uid, room });
 
-    return await callBack({ code: "SUCESS", data: room });
+    return await callBack({ code: "SUCESS", data: { uid, room } });
   });
 };

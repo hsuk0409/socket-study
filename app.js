@@ -51,6 +51,14 @@ io.use((socket, next) => {
   next();
 });
 
+/**
+ * TODO 싱글 프로세스 & 전역 상태관리 -> 멀티 프로세스 & 레디스 상태관리 변경 필요
+ * - 본 서버 또는 별개 서버에 레디스 서버를 띄운다
+ * - 레디스 어뎁터를 socket.io에 붙인다
+ * - 레디스 캐시 db를 활용하여 closure 데이터들을 관리한다
+ * - 컴퓨터 사양에 맞게 pm2 멀티 프로세스를 실행시킨다.
+ */
+
 const socketBaseHandler = require("./sockets/base.handler");
 const socketGameHandler = require("./sockets/game.handler");
 io.on("connect", async (socket) => {
