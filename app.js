@@ -32,6 +32,7 @@ const { generateUUID } = require("./utils/uuid.util");
 const io = socketIO.listen(listeningServer);
 io.use((socket, next) => {
   socket.uid = generateUUID();
+  console.log(`uid in app.js: ${socket.uid}`);
 
   let ipv4 = "0.0.0.0";
   try {
@@ -66,6 +67,11 @@ io.on("connect", async (socket) => {
   socketBaseHandler(io, socket);
   socketGameHandler(io, socket);
 });
+
+//! for test
+// app.use("/", (req, res) => {
+//   res.sendFile(__dirname + "/socket_test.html");
+// });
 
 app.on("ready", () => {
   console.log(`Server running on port: ${config.thisServer.port}`);
