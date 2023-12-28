@@ -114,6 +114,7 @@ module.exports = function (io, socket) {
       roomFunc.leaveRoom(roomId, uid);
       await socket.leave(roomId);
     }
+    console.log(`roomId in game:join: ${roomId}`);
     socket.roomId = roomId;
 
     const room = roomFunc.joinRoom(roomId, uid);

@@ -28,6 +28,7 @@ function RoomClosure() {
   };
 
   this.joinRoom = function (roomId, uid) {
+    console.log(`roomData in closure joinRoom: ${JSON.stringify(roomData)}`);
     if (roomId in roomData === false) {
       console.log(`Not exists room id`);
       return null;
