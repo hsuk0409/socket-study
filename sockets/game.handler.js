@@ -73,6 +73,7 @@ module.exports = function (io, socket) {
     const gameType = data.gameType || "CATCH_TAIL";
     const room = roomFunc.createRoom(roomId, roomUserLimit, gameType);
 
+    await socket.join(roomId);
     await socket.emit("room:create", {
       code: "SUCCESS",
       data: { roomId, room },
@@ -125,7 +126,7 @@ module.exports = function (io, socket) {
     }
 
     await socket.join(roomId);
-    await io.sockets.in(roomId).emit("userList", { uid, room });
+    await io.to(roomId).emit("userList", { uid, room });
   });
 
   /**
