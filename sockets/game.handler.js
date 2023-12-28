@@ -97,14 +97,16 @@ module.exports = function (io, socket) {
     if (validation.isEmpty(roomId)) {
       const errorMsg = `roomId is required.`;
       console.error(errorMsg);
-      return await callBack({ code: "FAIL", message: errorMsg });
+      await socket.emit("errorProcess", { code: "FAIL", message: errorMsg });
+      return;
     }
 
     const uid = socket.uid;
     if (validation.isEmpty(uid)) {
       const errorMsg = `socket.uid is null... [${uid}]`;
       console.error(errorMsg);
-      return await callBack({ code: "FAIL", message: errorMsg });
+      await socket.emit("errorProcess", { code: "FAIL", message: errorMsg });
+      return;
     }
 
     const roomFunc = new RoomClosure();
@@ -118,18 +120,27 @@ module.exports = function (io, socket) {
     if (validation.isEmpty(room)) {
       const errorMsg = `Fail join room...`;
       console.error(errorMsg);
-      return await callBack({ code: "FAIL", message: errorMsg });
+      await socket.emit("errorProcess", { code: "FAIL", message: errorMsg });
+      return;
     }
 
     await socket.join(roomId);
     await io.sockets.in(roomId).emit("userList", { uid, room });
-
-    return await callBack({ code: "SUCESS", data: { roomId, room } });
   });
 
   /**
-   * ? 게임 시작 이벤트에 대한 소켓 작업이 필요한게 있을까?
+   * * 인게임 대기 상태 확인
+   * * 게임 시작 전 방장을 제외한 방 유저들의 컨트롤러를 막는다.
+   *
    */
+  socket.on("game:status", async function (data, callBack) {});
+
+  /**
+   * ? 게임 시작 이벤트에 대한 소켓 작업이 필요한게 있을까?
+   * * 인게임 시작 이벤트
+   * * 카운트다운 끝나고 게임 시작 시 방장을 제외한 유저들에게 게임 시작을 알린다.
+   */
+  socket.on("game:start", async function (data, callBack) {});
 
   /**
    * * 인게임 데이터 공유
@@ -173,21 +184,21 @@ module.exports = function (io, socket) {
     if (validation.isEmpty(roomId)) {
       const errorMsg = `roomId is required.`;
       console.error(errorMsg);
-      return await callBack({ code: "FAIL", message: errorMsg });
+      await socket.emit("errorProcess", { code: "FAIL", message: errorMsg });
+      return;
     }
 
     const uid = socket.uid;
     if (validation.isEmpty(uid)) {
       const errorMsg = `socket.uid is null... [${uid}]`;
       console.error(errorMsg);
-      return await callBack({ code: "FAIL", message: errorMsg });
+      await socket.emit("errorProcess", { code: "FAIL", message: errorMsg });
+      return;
     }
 
     const roomFunc = new RoomClosure();
     const room = roomFunc.leaveRoom(roomId, uid);
     await socket.leave(roomId);
     await io.sockets.in(roomId).emit("userList", { uid, room });
-
-    return await callBack({ code: "SUCESS", data: { uid, room } });
   });
 };
