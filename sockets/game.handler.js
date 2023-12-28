@@ -1,6 +1,5 @@
 const { generateUUID } = require("../utils/uuid.util");
-const { RoomClosure } = require("../closures/room.closure");
-const roomFunc = new RoomClosure();
+const roomFunc = require("../closures/room.closure");
 const validation = require("../utils/validation.util");
 
 module.exports = function (io, socket) {

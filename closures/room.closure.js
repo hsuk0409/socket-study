@@ -1,19 +1,19 @@
-function RoomClosure() {
-  var roomData = {};
+const RoomClosure = () => {
+  let roomData = {};
 
-  this.getRoom = function (roomId) {
+  const getRoom = (roomId) => {
     return roomData[roomId];
   };
 
-  this.getRoomLength = function () {
+  const getRoomLength = () => {
     return Object.keys(roomData).length;
   };
 
-  this.duplicateRoomId = function (roomId) {
+  const duplicateRoomId = (roomId) => {
     return roomId in roomData;
   };
 
-  this.createRoom = function (roomId, roomUserLimit, gameType) {
+  const createRoom = (roomId, roomUserLimit, gameType) => {
     roomData[roomId] = {
       roomUserLimit: roomUserLimit,
       gameType: gameType,
@@ -22,12 +22,12 @@ function RoomClosure() {
     return roomData[roomId];
   };
 
-  this.canEnterRoom = function (roomId) {
+  const canEnterRoom = (roomId) => {
     const room = roomData[roomId];
     return room.roomUserLimit > room.roomUsers.length;
   };
 
-  this.joinRoom = function (roomId, uid) {
+  const joinRoom = (roomId, uid) => {
     console.log(`roomData in closure joinRoom: ${JSON.stringify(roomData)}`);
     if (roomId in roomData === false) {
       console.log(`Not exists room id`);
@@ -37,7 +37,7 @@ function RoomClosure() {
     if (uid in room.roomUsers) {
       return room;
     }
-    if (this.canEnterRoom(roomId) === false) {
+    if (canEnterRoom(roomId) === false) {
       console.log(`Room user is full.`);
       return null;
     }
@@ -45,7 +45,7 @@ function RoomClosure() {
     return room;
   };
 
-  this.leaveRoom = function (roomId, uid) {
+  const leaveRoom = (roomId, uid) => {
     const room = roomData[roomId];
     if (uid in room) {
       delete room[uid];
@@ -54,7 +54,7 @@ function RoomClosure() {
     return room;
   };
 
-  this.removeRoom = function (roomId) {
+  const removeRoom = (roomId) => {
     if (roomId in roomData) {
       delete roomData[roomId];
     }
@@ -62,11 +62,21 @@ function RoomClosure() {
     return roomData[roomId];
   };
 
-  this.clearClosure = function () {
+  const clearClosure = () => {
     roomData = {};
   };
-}
 
-module.exports = {
-  RoomClosure,
+  return {
+    getRoom,
+    getRoomLength,
+    duplicateRoomId,
+    createRoom,
+    canEnterRoom,
+    joinRoom,
+    leaveRoom,
+    removeRoom,
+    clearClosure,
+  };
 };
+
+module.exports = RoomClosure();
