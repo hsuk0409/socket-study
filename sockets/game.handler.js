@@ -26,7 +26,7 @@ module.exports = function (io, socket) {
    * * res
    * * 소켓 처리
    */
-  socket.on("init", async function (data, callBack) {
+  socket.on("socket:init", async function (data, callBack) {
     const uid = socket.uid;
     console.log(`uid in init: ${uid}`);
     return await callBack({ code: "SUCCESS", data: { uid } });
