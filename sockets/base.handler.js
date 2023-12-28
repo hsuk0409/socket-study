@@ -1,10 +1,10 @@
 const { RoomClosure } = require("../closures/room.closure");
+const roomFunc = new RoomClosure();
 const validation = require("../utils/validation.util");
 
 module.exports = function (io, socket) {
   socket.on("disconnect", async function (data) {
     console.log(`>>>> [disconnect] data: ${JSON.stringify(data) || ""} <<<<`);
-    const roomFunc = new RoomClosure();
     const roomId = socket.roomId;
     if (validation.isEmpty(roomId)) return;
     console.log(`roomId in disconnect: ${roomId}`);

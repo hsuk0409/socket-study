@@ -1,5 +1,6 @@
 const { generateUUID } = require("../utils/uuid.util");
 const { RoomClosure } = require("../closures/room.closure");
+const roomFunc = new RoomClosure();
 const validation = require("../utils/validation.util");
 
 module.exports = function (io, socket) {
@@ -47,7 +48,6 @@ module.exports = function (io, socket) {
    * * 소켓 처리
    */
   socket.on("room:create", async function (data, callBack) {
-    const roomFunc = new RoomClosure();
     let roomId;
     try {
       roomId = generateUUID();
@@ -108,8 +108,6 @@ module.exports = function (io, socket) {
       await socket.emit("errorProcess", { code: "FAIL", message: errorMsg });
       return;
     }
-
-    const roomFunc = new RoomClosure();
     if (validation.isEmpty(socket.roomId) === false) {
       roomFunc.leaveRoom(roomId, uid);
       await socket.leave(roomId);
@@ -197,7 +195,6 @@ module.exports = function (io, socket) {
       return;
     }
 
-    const roomFunc = new RoomClosure();
     const room = roomFunc.leaveRoom(roomId, uid);
     await socket.leave(roomId);
     await io.to(roomId).emit("userList", { uid, room });
