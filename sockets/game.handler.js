@@ -29,7 +29,7 @@ module.exports = function (io, socket) {
   socket.on("socket:init", async function (data, callBack) {
     const uid = socket.uid;
     console.log(`uid in init: ${uid}`);
-    socket.emit("socket:uid", { uid });
+    await socket.emit("socket:uid", { uid });
     // return await callBack({ code: "SUCCESS", data: { uid } });
   });
 
@@ -57,21 +57,23 @@ module.exports = function (io, socket) {
     } catch (err) {
       const errorMsg = `Create room error! ${JSON.stringify(err)}`;
       console.error(errorMsg);
-      return await callBack({ code: "FAIL", message: errorMsg });
+      await socket.emit("errorProcess", { code: "FAIL", message: errorMsg });
+      return;
     }
 
     const roomLimit = 10;
     if (roomFunc.getRoomLength() > roomLimit) {
       const errorMsg = `Room is full.`;
       console.error(errorMsg);
-      return await callBack({ code: "FAIL", message: errorMsg });
+      await socket.emit("errorProcess", { code: "FAIL", message: errorMsg });
+      return;
     }
 
     const roomUserLimit = data.roomUserLimit || 5;
     const gameType = data.gameType || "CATCH_TAIL";
     const room = roomFunc.createRoom(roomId, roomUserLimit, gameType);
 
-    return await callBack({
+    await socket.emit("room:create", {
       code: "SUCCESS",
       data: { roomId, room },
     });
