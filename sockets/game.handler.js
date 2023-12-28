@@ -159,7 +159,7 @@ module.exports = function (io, socket) {
     const uid = socket.uid;
     if (!validation.isEmpty(roomId) && !validation.isEmpty(uid)) {
       const gameData = data.gameData;
-      await io.sockets.in(roomId).emit("gameData", { data: gameData });
+      await io.to(roomId).emit("gameData", { data: gameData });
     } else {
       const errorMsg = `roomId or uid is required.`;
       console.error(errorMsg);
@@ -200,6 +200,6 @@ module.exports = function (io, socket) {
     const roomFunc = new RoomClosure();
     const room = roomFunc.leaveRoom(roomId, uid);
     await socket.leave(roomId);
-    await io.sockets.in(roomId).emit("userList", { uid, room });
+    await io.to(roomId).emit("userList", { uid, room });
   });
 };
